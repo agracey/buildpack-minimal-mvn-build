@@ -44,4 +44,4 @@ fi
 
 
 # Install npm dependencies specified
-pushd $BUILD_DIR &&  $BUILDPACK_DIR/mvnw clean install build && popd 
+pushd $BUILD_DIR &&  mvn clean install compile && popd 
