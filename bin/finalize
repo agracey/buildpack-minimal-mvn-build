@@ -1,0 +1,23 @@
+#!/bin/bash
+
+## Nothing to finalize since this only installs deps
+
+MVN_VERSION=3.6.3
+
+
+export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
+BUILD_DIR=$1
+CACHE_DIR=$2
+DEPS_DIR=$3/$4
+
+echo "Running Finalize Script of Maven Build buildpack"
+
+pushd $CACHE_DIR
+wget http://mirror.metrocast.net/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -o apache-maven-3.6.3-bin.tar.gz
+tar xzvf apache-maven-$MVN_VERSION-bin.tar.gz
+export PATH=$CACHE_DIR/apache-maven-$MVN_VERSION/bin:$PATH
+popd
+
+
+# Install npm dependencies specified
+pushd $BUILD_DIR &&  $BUILDPACK_DIR/mvnw clean install build && popd 

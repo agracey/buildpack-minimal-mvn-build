@@ -1,0 +1,47 @@
+#!/bin/bash
+
+###
+# Supply is where any needed dependencies are downloaded and installed.
+# 
+# I'm pulling down a recent version of node.js and installing it into the dependencies directory. 
+#
+# There are four directories that we care about:
+# - BUILDPACK_DIR is the directory where the buildpack it self gets unpacked to.
+# - BUILD_DIR is the folder that gets turned into the droplet/container
+# 
+###
+echo "Running Supply Script of Maven Buildpack"
+
+
+export MVN_VERSION=3.6.3
+export JDK_VERSION=14.0.1
+
+export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
+BUILD_DIR=$1
+CACHE_DIR=$2
+DEPS_DIR=$3/$4
+
+
+if [ ! -f $CACHE_DIR/openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz ]; then
+echo "Didn't have jdk cached, downloading..."
+  pushd $CACHE_DIR
+    wget https://download.java.net/java/GA/jdk$JDK_VERSION/664493ef4a6946b186ff29eb326336a2/7/GPL/openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz > openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz
+    tar xzvf openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz
+    export PATH=$CACHE_DIR/jdk-$JDK_VERSION/bin:$PATH
+  popd
+fi
+
+if [ ! -f $CACHE_DIR/apache-maven-$MVN_VERSION-bin.tar.gz ]; then
+echo "Didn't have Maven cached, downloading..."
+  pushd $CACHE_DIR
+    wget http://mirror.metrocast.net/apache/maven/maven-3/$MVN_VERSION/binaries/apache-maven-$MVN_VERSION-bin.tar.gz > apache-maven-$MVN_VERSION-bin.tar.gz
+    tar xzvf apache-maven-$MVN_VERSION-bin.tar.gz
+    export PATH=$CACHE_DIR/apache-maven-$MVN_VERSION/bin:$PATH
+  popd
+fi
+
+
+
+
+# Install npm dependencies specified
+pushd $BUILD_DIR &&  $BUILDPACK_DIR/mvnw clean install build && popd 
