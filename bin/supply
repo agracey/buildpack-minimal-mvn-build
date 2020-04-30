@@ -26,7 +26,7 @@ if [ ! -f $CACHE_DIR/openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz ]; then
 echo "Didn't have jdk cached, downloading..."
   pushd $CACHE_DIR
     curl https://download.java.net/java/GA/jdk$JDK_VERSION/664493ef4a6946b186ff29eb326336a2/7/GPL/openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz > openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz
-    tar xzvf openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz
+    tar xzf openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz
     export PATH=$CACHE_DIR/jdk-$JDK_VERSION/bin:$PATH
   popd
 fi
@@ -35,7 +35,7 @@ if [ ! -f $CACHE_DIR/apache-maven-$MVN_VERSION-bin.tar.gz ]; then
 echo "Didn't have Maven cached, downloading..."
   pushd $CACHE_DIR
     curl http://mirror.metrocast.net/apache/maven/maven-3/$MVN_VERSION/binaries/apache-maven-$MVN_VERSION-bin.tar.gz > apache-maven-$MVN_VERSION-bin.tar.gz
-    tar xzvf apache-maven-$MVN_VERSION-bin.tar.gz
+    tar xzf apache-maven-$MVN_VERSION-bin.tar.gz
     export PATH=$CACHE_DIR/apache-maven-$MVN_VERSION/bin:$PATH
   popd
 fi
@@ -44,4 +44,10 @@ fi
 
 
 # Install npm dependencies specified
-pushd $BUILD_DIR &&  mvn clean install compile && popd 
+pushd $BUILD_DIR 
+  mvn clean install spring:repackage
+  ls -la target
+
+  cp -r target/classes/* .
+
+popd 
